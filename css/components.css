@@ -1,0 +1,274 @@
+/* ==========================================================
+   ZUPPY — Reusable components: brand, header, footer, sidebar siswa, modal
+   ========================================================== */
+
+/* ---------- Brand (logo asli) ----------
+   logo.png memiliki ruang kosong di sekelilingnya. Area logo yang terlihat
+   dipotong lewat CSS (tanpa mengubah file asli):
+   isi logo = 1511 x 729 px dari kanvas 1774 x 887 px.
+   Jika file logo diganti, sesuaikan angka di bawah. */
+.brand { display: inline-flex; align-items: center; }
+
+.brand-logo {
+  --logo-h: 46px;
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  height: var(--logo-h);
+  aspect-ratio: 1511 / 729;
+  overflow: hidden;
+}
+.brand-logo img {
+  position: absolute;
+  top: -6.72%;      /* 49 / 729  */
+  left: -14.89%;    /* 225 / 1511 */
+  width: 117.41%;   /* 1774 / 1511 */
+  max-width: none;
+  height: auto;
+}
+.brand-logo--lg { --logo-h: 64px; }
+
+/* ---------- Header (publik) ---------- */
+.site-header { position: sticky; top: 12px; z-index: 50; padding: 12px var(--space-4) 0; }
+
+.site-header__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.site-nav { display: flex; align-items: center; gap: var(--space-1); }
+.site-nav__link {
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.site-nav__link:hover { background: var(--purple-soft); color: var(--purple); }
+.site-nav__link.is-active { background: var(--purple); color: var(--white); box-shadow: var(--shadow-purple); }
+
+.site-header__actions { display: flex; align-items: center; gap: var(--space-3); }
+.link-login {
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--purple);
+  transition: background 0.2s var(--ease);
+}
+.link-login:hover { background: var(--purple-soft); }
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 40px; height: 40px;
+  overflow: hidden;
+  background: var(--purple-soft);
+  border: 2px solid var(--purple);
+  border-radius: 50%;
+  transition: transform 0.2s var(--ease);
+}
+.avatar:hover { transform: scale(1.08); }
+.avatar img { width: 100%; height: 100%; object-fit: contain; transform: scale(1.1); }
+
+.nav-toggle {
+  display: none;
+  place-items: center;
+  width: 40px; height: 40px;
+  background: var(--purple-soft);
+  color: var(--purple);
+  border: 0;
+  border-radius: 12px;
+}
+.nav-toggle svg { width: 22px; height: 22px; }
+.nav-toggle .icon-close { display: none; }
+.site-header.is-open .nav-toggle .icon-open { display: none; }
+.site-header.is-open .nav-toggle .icon-close { display: block; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  margin-top: var(--space-8);
+  padding: 56px 0 28px;
+  background: var(--night);
+  color: rgba(255, 255, 255, 0.78);
+}
+.site-footer__grid {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr 1.2fr;
+  gap: var(--space-7);
+}
+.site-footer__brandline { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.site-footer__tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--turquoise);
+}
+.site-footer__brand p { max-width: 420px; margin-top: var(--space-4); font-size: 14px; line-height: 1.7; }
+.site-footer__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--space-4) !important;
+  font-size: 12px !important;
+  font-weight: 700;
+  color: var(--turquoise);
+}
+.site-footer__badge svg { width: 18px; height: 18px; }
+
+.site-footer__col h3 { margin-bottom: var(--space-4); font-size: 18px; color: var(--white); }
+.site-footer__col ul { display: grid; gap: 10px; }
+.site-footer__col a { font-size: 14px; transition: color 0.2s var(--ease), padding-left 0.2s var(--ease); }
+.site-footer__col a:hover { color: var(--turquoise); padding-left: 4px; }
+
+.site-footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+}
+.site-footer__dots { display: flex; gap: 6px; }
+.site-footer__dots span { width: 8px; height: 8px; border-radius: 50%; }
+.site-footer__dots span:nth-child(1) { background: var(--purple); }
+.site-footer__dots span:nth-child(2) { background: var(--turquoise); }
+.site-footer__dots span:nth-child(3) { background: var(--yellow); }
+.site-footer__dots span:nth-child(4) { background: var(--pink); }
+
+/* ---------- Sidebar siswa ---------- */
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: var(--sidebar-w);
+  height: 100vh;
+  padding: var(--space-5) var(--space-4);
+  background: var(--white);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+}
+.sidebar__top { display: flex; align-items: center; justify-content: space-between; padding-inline: var(--space-2); }
+.sidebar__close {
+  display: none;
+  place-items: center;
+  width: 36px; height: 36px;
+  background: var(--purple-soft);
+  color: var(--purple);
+  border: 0;
+  border-radius: 10px;
+}
+.sidebar__close svg { width: 20px; height: 20px; }
+
+.sidebar__label {
+  padding-inline: var(--space-3);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sidebar__nav ul { display: grid; gap: 4px; margin-top: var(--space-2); }
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.sidebar__link svg { width: 20px; height: 20px; flex-shrink: 0; }
+.sidebar__link:hover { background: var(--purple-soft); color: var(--purple); transform: translateX(3px); }
+.sidebar__link.is-active { background: var(--purple); color: var(--white); box-shadow: var(--shadow-purple); transform: none; }
+
+.sidebar__footer { margin-top: auto; padding-top: var(--space-4); border-top: 1px solid var(--line); }
+.sidebar__link--logout { color: #D63B7B; }
+.sidebar__link--logout:hover { background: var(--pink-soft); color: #D63B7B; }
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(35, 26, 69, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease);
+}
+.sidebar-overlay.is-visible { opacity: 1; pointer-events: auto; }
+
+/* ---------- Modal (konfirmasi logout) ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+}
+.modal.is-open { opacity: 1; }
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(35, 26, 69, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.modal__panel {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  padding: 32px 28px 28px;
+  text-align: center;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transform: translateY(12px) scale(0.96);
+  transition: transform 0.25s var(--ease);
+}
+.modal.is-open .modal__panel { transform: none; }
+
+.modal__icon {
+  display: grid;
+  place-items: center;
+  width: 60px; height: 60px;
+  margin: 0 auto var(--space-4);
+  background: var(--pink-soft);
+  color: #D63B7B;
+  border-radius: 50%;
+}
+.modal__icon svg { width: 26px; height: 26px; }
+
+.modal__panel h2 { font-size: 22px; }
+.modal__panel p { margin-top: var(--space-2); font-size: 14px; color: var(--muted); }
+
+.modal__actions { display: flex; gap: var(--space-3); margin-top: var(--space-5); }
+.modal__actions .btn { flex: 1; }
+.modal__actions .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+@media (max-width: 420px) {
+  .modal__panel { padding: 28px 20px 22px; }
+  .modal__actions { flex-direction: column-reverse; }
+}

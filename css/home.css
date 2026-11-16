@@ -1,0 +1,307 @@
+/* ==========================================================
+   ZUPPY — Halaman publik (homepage & info)
+   ========================================================== */
+
+/* ---------- Utilitas ---------- */
+.icon {
+  width: 20px; height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+.icon--fill { fill: currentColor; stroke: none; }
+
+section[id] { scroll-margin-top: 96px; }
+
+/* Animasi muncul saat di-scroll (diaktifkan oleh js/app.js) */
+.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+.js .reveal.is-visible { opacity: 1; transform: none; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  margin-top: -84px;
+  padding: 148px 0 88px;
+  background:
+    radial-gradient(900px 420px at 85% 10%, rgba(105, 65, 245, 0.10), transparent 70%),
+    linear-gradient(180deg, #F1ECFF 0%, #F9F7FF 65%, var(--white) 100%);
+}
+.hero__grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: var(--space-7); align-items: center; }
+
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--yellow);
+  border: 1.5px solid #E8C92B;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.hero__badge .icon { width: 14px; height: 14px; }
+
+.hero__title { margin-top: 20px; font-size: clamp(34px, 5.2vw, 54px); line-height: 1.12; font-weight: 800; }
+.hl-seru { color: var(--purple); }
+.hero__lead { max-width: 470px; margin-top: 18px; font-size: 17px; color: var(--muted); }
+.hero__actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+.hero__meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+}
+.chip .icon { width: 14px; height: 14px; }
+.chip--white { background: var(--white); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+.chip--white .icon { color: #F5B800; }
+.chip--purple { background: var(--purple-soft); color: var(--purple-dark); }
+
+/* Visual hero: maskot asli (dipotong lewat CSS: isi 1271 x 949 dari kanvas 1536 x 1024) */
+.hero__visual { position: relative; display: grid; place-items: center; min-height: 400px; }
+.hero__glow {
+  position: absolute;
+  width: 80%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(105, 65, 245, 0.22), rgba(105, 65, 245, 0) 68%);
+}
+.mascot {
+  position: relative;
+  width: min(80%, 380px);
+  aspect-ratio: 1271 / 949;
+  overflow: hidden;
+  animation: float 4.5s ease-in-out infinite;
+}
+.mascot img {
+  position: absolute;
+  top: -3.69%;      /* 35 / 949  */
+  left: -10.31%;    /* 131 / 1271 */
+  width: 120.85%;   /* 1536 / 1271 */
+  max-width: none;
+  height: auto;
+}
+
+.float-chip {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 8px;
+  background: var(--white);
+  border: 2px solid;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+  font-size: 13px;
+  font-weight: 800;
+  animation: float 5s ease-in-out 0.6s infinite;
+}
+.float-chip__icon { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; }
+.float-chip__icon .icon { width: 14px; height: 14px; }
+.float-chip--xp { top: 12%; right: 4%; border-color: var(--yellow); }
+.float-chip--xp .float-chip__icon { background: var(--yellow); }
+.float-chip--fun { bottom: 14%; right: 0; border-color: var(--turquoise); }
+.float-chip--fun .float-chip__icon { background: var(--turquoise-soft); color: var(--turquoise-dark); }
+
+/* ---------- Section umum ---------- */
+.section { padding: 88px 0; }
+.section--tint { background: var(--purple-tint); }
+
+.section-head { max-width: 640px; margin: 0 auto 48px; text-align: center; }
+.section-head h2 { margin-top: 14px; font-size: clamp(26px, 3.6vw, 36px); }
+.section-head p { margin-top: 12px; color: var(--muted); }
+
+.section-head--split {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+  max-width: none;
+  margin: 0 0 36px;
+  text-align: left;
+}
+.section-head--split p { max-width: 520px; }
+
+.link-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--purple);
+  white-space: nowrap;
+}
+.link-more .icon { width: 16px; height: 16px; transition: transform 0.2s var(--ease); }
+.link-more:hover .icon { transform: translateX(4px); }
+
+/* ---------- Fitur (Kenalan dengan Zuppy) ---------- */
+.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.feature-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+.feature-card__icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; }
+.feature-card__icon .icon { width: 24px; height: 24px; }
+.feature-card h3 { margin-top: 18px; font-size: 20px; }
+.feature-card p { margin-top: 10px; font-size: 14px; color: var(--muted); }
+.feature-card__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 18px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.feature-card__foot::before { content: ""; }
+.feature-card p + .feature-card__foot { margin-top: 20px; border-top: 1px solid var(--line); }
+.feature-card__foot .icon { width: 16px; height: 16px; color: var(--turquoise-dark); }
+
+.tone-yellow { background: var(--yellow); color: var(--ink); }
+.tone-turquoise { background: var(--turquoise); color: var(--ink); }
+.tone-purple { background: var(--purple-soft); color: var(--purple); }
+
+/* ---------- Mata pelajaran ---------- */
+.subject-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+
+.subject-card {
+  --accent: var(--purple);
+  --accent-soft: var(--purple-soft);
+  --accent-ink: var(--purple-dark);
+  --on-accent: var(--white);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 26px 22px 22px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.subject-card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 5px; background: var(--accent); }
+.subject-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+.subject-card--turquoise { --accent: var(--turquoise); --accent-soft: var(--turquoise-soft); --accent-ink: #137F74; --on-accent: var(--ink); }
+.subject-card--pink { --accent: var(--pink); --accent-soft: var(--pink-soft); --accent-ink: #C42E6E; --on-accent: var(--white); }
+.subject-card--yellow { --accent: var(--yellow); --accent-soft: var(--yellow-soft); --accent-ink: #8A6A00; --on-accent: var(--ink); }
+
+.subject-card__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.subject-card__icon { display: grid; place-items: center; width: 44px; height: 44px; background: var(--accent-soft); color: var(--accent-ink); border-radius: 12px; }
+.subject-card__tag {
+  padding: 3px 10px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-radius: var(--radius-pill);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.subject-card h3 { font-size: 19px; }
+.subject-card p { flex: 1; font-size: 13px; color: var(--muted); }
+.subject-card .btn { width: 100%; background: var(--accent); color: var(--on-accent); font-size: 13px; padding: 10px 16px; }
+.subject-card .btn .icon { width: 12px; height: 12px; }
+
+.subject-more { display: flex; justify-content: center; margin-top: 36px; }
+.subject-more .btn { background: var(--white); border-color: var(--line); color: var(--ink); box-shadow: var(--shadow-sm); font-size: 13px; }
+.subject-more .btn .icon { width: 16px; height: 16px; }
+
+/* ---------- Langkah belajar ---------- */
+.step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+.step-card {
+  padding: 24px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.step-card__top { display: flex; align-items: center; justify-content: space-between; }
+.step-card__num { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; font-family: var(--font-heading); font-size: 16px; font-weight: 800; }
+.step-card__top .icon { width: 22px; height: 22px; color: var(--muted); }
+.step-card h3 { margin-top: 18px; font-size: 18px; }
+.step-card p { margin-top: 8px; font-size: 14px; color: var(--muted); }
+.num-purple { background: var(--purple); color: var(--white); }
+.num-turquoise { background: var(--turquoise); color: var(--ink); }
+.num-yellow { background: var(--yellow); color: var(--ink); }
+
+/* ---------- Call to action ---------- */
+.cta { padding: 72px 0 0; }
+.cta__box {
+  position: relative;
+  padding: 56px 48px;
+  overflow: hidden;
+  background:
+    radial-gradient(520px 260px at 88% 0%, rgba(105, 65, 245, 0.55), transparent 70%),
+    radial-gradient(420px 240px at 0% 100%, rgba(255, 101, 163, 0.22), transparent 70%),
+    var(--night);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 28px;
+  box-shadow: var(--shadow-md);
+}
+.cta__box h2 { max-width: 460px; margin-top: 16px; font-size: clamp(28px, 4vw, 40px); color: var(--white); }
+.cta__box p { max-width: 460px; margin-top: 14px; color: rgba(255, 255, 255, 0.75); }
+.cta__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
+/* ---------- Halaman info ---------- */
+.info { padding: 56px 0 24px; }
+.info__head { max-width: 640px; }
+.info__head h1 { margin-top: 14px; font-size: clamp(30px, 4.4vw, 42px); }
+.info__head p { margin-top: 12px; color: var(--muted); }
+.info__section { max-width: 760px; margin-top: 56px; }
+.info__section h2 { font-size: 26px; }
+.info__section > p { margin-top: 12px; color: var(--muted); }
+.info__section ul { margin-top: 12px; display: grid; gap: 8px; list-style: disc; padding-left: 20px; color: var(--muted); }
+
+.faq { display: grid; gap: 12px; margin-top: 20px; }
+.faq details { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.faq summary { padding: 16px 20px; font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: var(--space-3); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; font-size: 20px; line-height: 1; color: var(--purple); }
+.faq details[open] summary::after { content: "–"; }
+.faq details p { padding: 0 20px 18px; font-size: 14px; color: var(--muted); }
+
+/* ==========================================================
+   Responsive halaman publik
+   ========================================================== */
+@media (max-width: 1000px) {
+  .subject-grid { grid-template-columns: repeat(2, 1fr); }
+  .feature-grid, .step-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px) {
+  .hero { margin-top: -80px; padding: 128px 0 64px; }
+  .hero__grid { grid-template-columns: 1fr; gap: var(--space-5); }
+  .hero__visual { min-height: 320px; }
+  .section { padding: 64px 0; }
+  .section-head--split { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 620px) {
+  .subject-grid { grid-template-columns: 1fr; }
+  .hero__actions .btn { width: 100%; }
+  .float-chip--xp { right: 0; }
+  .cta__box { padding: 36px 24px; }
+  .cta__actions .btn { width: 100%; }
+}

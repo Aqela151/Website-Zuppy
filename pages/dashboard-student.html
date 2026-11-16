@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Zuppy</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/home.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <script src="../js/components.js" defer></script>
+  <script src="../js/storage.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../data/subjects.js" defer></script>
+  <script src="../js/student.js" defer></script>
+</head>
+<body data-root="../" data-page="dashboard" data-auth="required">
+
+  <div class="dashboard-layout">
+    <div data-component="sidebar-student"></div>
+
+    <main class="dash-main">
+      <!-- ============ HEADER DASHBOARD ============ -->
+      <header class="dash-topbar">
+        <button class="dash-menu-btn" type="button" data-sidebar-toggle aria-label="Buka menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div class="dash-topbar__text">
+          <p class="dash-topbar__greeting" id="topGreeting"></p>
+          <p class="dash-topbar__name" id="topName"></p>
+        </div>
+
+        <!-- Profil siswa: dropdown -->
+        <div class="dash-profile" data-dropdown>
+          <button class="dash-user" type="button" data-dropdown-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="profileMenu">
+            <span class="dash-avatar" id="topAvatar" aria-hidden="true"></span>
+            <span class="dash-user__meta">
+              <strong id="topUserName"></strong>
+              <span id="topUserHandle"></span>
+            </span>
+            <svg class="icon dash-user__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+
+          <div class="dash-menu" id="profileMenu" role="menu" aria-label="Menu profil" data-dropdown-menu>
+            <a class="dash-menu__item" role="menuitem" data-href="pages/profile.html">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+              Profil Saya
+            </a>
+            <span class="dash-menu__divider" role="separator"></span>
+            <button class="dash-menu__item dash-menu__item--danger" type="button" role="menuitem" data-action="logout">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div id="top" data-spy="dashboard">
+        <!-- ============ HERO ============ -->
+        <section class="dash-hero" aria-labelledby="heroTitle">
+          <div class="dash-hero__copy">
+            <span class="badge badge--yellow" id="heroLevel">Level 1</span>
+            <h1 id="heroTitle">Halo! 👋</h1>
+            <p>Siap belajar hal baru hari ini?</p>
+            <div class="dash-xpbar">
+              <p class="dash-xpbar__text" id="heroXpText"></p>
+              <div class="dash-progress dash-progress--onpurple"><span class="dash-progress__fill" id="heroXpFill"></span></div>
+            </div>
+            <a class="btn btn--yellow" data-href="pages/subjects.html">
+              Mulai Belajar
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
+          <div class="mascot"><img data-src="assets/images/mascot/maskot.png" alt="Zuppy, maskot belajar yang ceria"></div>
+        </section>
+
+        <!-- ============ RINGKASAN ============ -->
+        <section class="dash-stats" id="statGrid" aria-label="Ringkasan belajar"></section>
+      </div>
+
+      <!-- ============ LANJUTKAN BELAJAR + TANTANGAN ============ -->
+      <div class="dash-row">
+        <section class="dash-card" aria-labelledby="continueTitle">
+          <header class="dash-card__head"><h2 id="continueTitle">Lanjutkan Belajar</h2></header>
+          <div id="continueBody"></div>
+        </section>
+
+        <section class="dash-card" aria-labelledby="challengeTitle">
+          <header class="dash-card__head">
+            <h2 id="challengeTitle">Tantangan Harian</h2>
+            <span class="badge badge--turquoise" id="challengeCount"></span>
+          </header>
+          <div id="challengeBody"></div>
+        </section>
+      </div>
+
+      <!-- ============ MATA PELAJARAN ============ -->
+      <section id="mapel" aria-labelledby="subjectsTitle">
+        <header class="dash-section-head">
+          <h2 id="subjectsTitle">Jelajahi Mata Pelajaran</h2>
+          <a class="link-more" data-href="pages/subjects.html">
+            Lihat semua
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </header>
+        <div class="dash-subjects" id="subjectGrid"></div>
+      </section>
+
+      <!-- ============ PROGRESS + LEADERBOARD ============ -->
+      <div class="dash-row">
+        <section class="dash-card" id="progres" data-spy="progress" aria-labelledby="progressTitle">
+          <header class="dash-card__head">
+            <div>
+              <h2 id="progressTitle">Progress Belajar</h2>
+              <p class="dash-card__sub" id="weekTotal"></p>
+            </div>
+          </header>
+          <div class="dash-chart" id="weekChart" role="img" aria-label="Grafik aktivitas belajar 7 hari terakhir"></div>
+
+          <h3 class="dash-card__subtitle">Aktivitas Terbaru</h3>
+          <ul class="dash-activity" id="activityList"></ul>
+        </section>
+
+        <section class="dash-card" id="leaderboard" data-spy="leaderboard" aria-labelledby="boardTitle">
+          <header class="dash-card__head"><h2 id="boardTitle">Leaderboard</h2></header>
+          <ol class="dash-board" id="boardList"></ol>
+          <p class="dash-board__note">Peringkat siswa lain adalah data demo lokal.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="dash-toast" id="toast" role="status" aria-live="polite"></div>
+
+</body>
+</html>
