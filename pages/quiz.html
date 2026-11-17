@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan — Zuppy</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/home.css">
+  <link rel="stylesheet" href="../css/game.css">
+  <script src="../js/components.js" defer></script>
+  <script src="../js/storage.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../data/subjects.js" defer></script>
+  <script src="../data/questions.js" defer></script>
+  <script src="../js/game.js" defer></script>
+  <script src="../js/quiz.js" defer></script>
+</head>
+<body data-root="../" data-page="quiz" data-auth="required">
+
+  <div class="game scene-box" id="game" data-theme="purple">
+    <div class="scene" data-scene="game"></div>
+
+    <header class="game-hud">
+      <button class="hud-btn" id="exitBtn" type="button" aria-label="Keluar dari misi">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="hud-title">
+        <span id="hudSubject"></span>
+        <strong id="hudLevel"></strong>
+      </div>
+      <div class="hud-stats">
+        <span class="hud-chip" id="hudScore">Skor 0</span>
+        <span class="hud-chip hud-chip--xp" id="hudXp">0 XP</span>
+      </div>
+    </header>
+
+    <div class="game-progress">
+      <div class="segs" id="segs" aria-hidden="true"></div>
+      <p class="game-progress__text" id="progressText"></p>
+    </div>
+
+    <main class="game-main">
+      <section class="quest" id="quest" aria-live="polite">
+        <p class="quest__narration" id="narration"></p>
+        <div class="quest__meta">
+          <span class="badge badge--purple" id="qType"></span>
+          <span class="quest__count" id="qCount"></span>
+        </div>
+        <h1 class="quest__q" id="qText"></h1>
+        <div class="opts" id="qOptions" role="group" aria-label="Pilihan jawaban"></div>
+        <div class="feedback" id="feedback" hidden>
+          <strong id="fbTitle"></strong>
+          <p id="fbText"></p>
+        </div>
+        <div class="quest__next">
+          <button class="btn btn--primary" id="nextBtn" type="button" hidden>Lanjut</button>
+        </div>
+      </section>
+    </main>
+
+    <div class="trail" id="trail">
+      <div class="trail__track">
+        <div class="trail__line"></div>
+        <div id="trailNodes"></div>
+        <div class="trail__mascot" id="walker" data-edge="start">
+          <div class="bubble" id="bubble"></div>
+          <div id="mascot" data-zuppy></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

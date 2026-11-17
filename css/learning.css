@@ -1,0 +1,249 @@
+/* ==========================================================
+   ZUPPY — Halaman belajar: peta level, introduction, hasil
+   Memakai layout dashboard (dashboard.css) + tema dunia (game.css).
+   ========================================================== */
+
+#view { display: grid; gap: 24px; min-width: 0; }
+
+.lv-pagehead h1 { font-size: clamp(26px, 3.4vw, 34px); }
+.lv-pagehead p { margin-top: 6px; color: var(--muted); }
+
+.lv-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-self: start;
+  padding: 6px 14px 6px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--purple);
+  transition: background 0.2s var(--ease);
+}
+.lv-back:hover { background: var(--purple-soft); }
+.lv-back .icon { width: 16px; height: 16px; }
+
+/* ---------- Hero mata pelajaran ---------- */
+.lv-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 240px;
+  padding: 28px 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+.lv-hero__copy { position: relative; z-index: 1; max-width: 520px; color: var(--hud-ink); }
+.lv-hero__copy h1 { margin-top: 10px; font-size: clamp(26px, 3.6vw, 36px); color: var(--hud-ink); }
+.lv-hero__copy > p { margin-top: 8px; font-weight: 600; opacity: 0.95; }
+.lv-hero__progress { display: flex; align-items: center; gap: 12px; margin-top: 18px; font-size: 13px; font-weight: 800; flex-wrap: wrap; }
+.lv-meter { width: 180px; height: 10px; background: rgba(255, 255, 255, 0.4); border-radius: var(--radius-pill); overflow: hidden; }
+.lv-meter__fill { display: block; width: 0; height: 100%; background: var(--yellow); border-radius: inherit; transition: width 0.7s var(--ease); }
+.lv-hero__zuppy { position: absolute; right: 7%; bottom: 14px; z-index: 1; }
+.lv-hero__zuppy .zuppy { --zp-w: 170px; }
+
+/* ---------- Peta level ---------- */
+.lv-path { list-style: none; max-width: 900px; margin: 0 auto; padding: 8px 0; width: 100%; }
+.lv-stop { position: relative; display: flex; align-items: center; min-height: 210px; }
+.lv-stop--left { justify-content: flex-end; }
+.lv-stop--right { justify-content: flex-start; }
+
+.lv-node {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 76px; height: 76px;
+  transform: translate(-50%, -50%);
+}
+.lv-stop--left .lv-node { left: 18%; }
+.lv-stop--right .lv-node { left: 82%; }
+
+.lv-node__inner {
+  display: grid;
+  place-items: center;
+  width: 76px; height: 76px;
+  background: var(--hill-1);
+  color: var(--on-hill);
+  border: 4px solid var(--white);
+  border-radius: 50%;
+  box-shadow: 0 6px 0 rgba(35, 26, 69, 0.18);
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 800;
+}
+.lv-node__inner .icon { width: 30px; height: 30px; stroke-width: 3; }
+
+.is-current .lv-node__inner::after,
+.is-current .lv-node::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 4px solid var(--hill-1);
+  animation: node-ring 1.8s ease-out infinite;
+}
+@keyframes node-ring { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.5); opacity: 0; } }
+
+.is-locked .lv-node__inner { background: var(--line); color: #A9A3BD; box-shadow: none; }
+
+.lv-pin { position: absolute; bottom: calc(100% - 8px); left: 50%; z-index: 3; transform: translateX(-50%); }
+.lv-pin .zuppy { --zp-w: 80px; }
+
+.lv-link { position: absolute; left: 0; top: 50%; z-index: 1; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.lv-link path {
+  fill: none;
+  stroke: #CFC6F0;
+  stroke-width: 4;
+  stroke-dasharray: 2 10;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.lv-stop.is-completed .lv-link path { stroke: var(--hill-1); }
+
+.lv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 60%;
+  padding: 20px 22px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.lv-stop:not(.is-locked) .lv-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.is-locked .lv-card { opacity: 0.78; }
+.lv-card__tag { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--purple); }
+.lv-card h3 { font-size: 19px; }
+.lv-card p { font-size: 13px; color: var(--muted); }
+.lv-card__meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.lv-chip { padding: 3px 10px; background: var(--purple-soft); color: var(--purple-dark); border-radius: var(--radius-pill); font-size: 11px; font-weight: 800; }
+.lv-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 4px; }
+.lv-best { font-size: 12px; font-weight: 700; color: var(--muted); }
+.lv-lock { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.lv-lock .icon { width: 16px; height: 16px; }
+
+/* ---------- Introduction ---------- */
+.intro { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 24px; align-items: stretch; }
+
+.intro__stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 420px;
+  padding: 0 20px 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+.intro__cast { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.intro__zuppy .zuppy { --zp-w: 230px; }
+
+.intro__panel {
+  padding: 30px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.intro__panel h1 { margin-top: 12px; font-size: clamp(26px, 3.4vw, 34px); }
+.intro__story { margin-top: 10px; color: var(--muted); }
+.intro__goal { margin-top: 18px; padding: 14px 16px; background: var(--purple-tint); border-left: 4px solid var(--purple); border-radius: 12px; }
+.intro__goal strong { font-size: 13px; color: var(--purple-dark); }
+.intro__goal p { margin-top: 4px; font-size: 14px; }
+.intro__facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+.fact { padding: 12px 10px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-md); text-align: center; }
+.fact strong { display: block; font-family: var(--font-heading); font-size: 17px; line-height: 1.25; }
+.fact span { font-size: 11px; font-weight: 600; color: var(--muted); }
+.intro__recap { margin-top: 16px; padding: 12px 14px; background: var(--yellow-soft); border-radius: 12px; font-size: 13px; font-weight: 600; color: #6B5300; }
+.intro__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+
+/* ---------- Hasil permainan ---------- */
+.res-hero {
+  display: grid;
+  place-items: center;
+  min-height: 440px;
+  padding: 32px 20px 40px;
+  text-align: center;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+.res-hero__body { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; color: var(--hud-ink); }
+.res-hero__label { font-size: 13px; font-weight: 800; opacity: 0.95; }
+.res-hero h1 { margin-top: 6px; font-size: clamp(28px, 4vw, 40px); color: var(--hud-ink); }
+.res-hero__text { max-width: 440px; margin-top: 6px; font-weight: 600; }
+.res-hero__zuppy { margin: 20px 0 10px; }
+.res-hero__zuppy .zuppy { --zp-w: 190px; }
+
+.res-card {
+  display: grid;
+  gap: 18px;
+  padding: 26px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.res-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.res-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.res-stat { padding: 16px 8px; text-align: center; background: var(--purple-tint); border-radius: var(--radius-md); }
+.res-stat strong { display: block; font-family: var(--font-heading); font-size: 28px; line-height: 1.15; }
+.res-stat span { font-size: 12px; font-weight: 700; color: var(--muted); }
+.res-stat--ok { background: var(--turquoise-soft); }
+.res-stat--ok strong { color: #0F6B61; }
+.res-stat--no { background: var(--pink-soft); }
+.res-stat--no strong { color: #B0285F; }
+.res-stat--xp { background: var(--yellow-soft); }
+.res-note { text-align: center; font-size: 14px; color: var(--muted); }
+.res-note strong { color: var(--ink); }
+.res-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.res-locked { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; background: var(--purple-tint); border-radius: var(--radius-pill); font-size: 14px; font-weight: 700; color: var(--muted); }
+.res-locked .icon { width: 18px; height: 18px; }
+
+/* ==========================================================
+   Responsive
+   ========================================================== */
+@media (max-width: 1000px) {
+  .intro { grid-template-columns: 1fr; }
+  .intro__stage { min-height: 340px; }
+  .res-stats { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 720px) {
+  .lv-hero { padding: 24px 20px 120px; min-height: 0; }
+  .lv-hero__zuppy { right: 20px; bottom: 8px; }
+  .lv-hero__zuppy .zuppy { --zp-w: 120px; }
+
+  /* Peta menjadi jalur lurus */
+  .lv-stop,
+  .lv-stop--left,
+  .lv-stop--right { justify-content: flex-start; min-height: 0; padding: 14px 0 22px; }
+  .lv-stop .lv-node,
+  .lv-stop--left .lv-node,
+  .lv-stop--right .lv-node { top: 52px; left: 30px; width: 56px; height: 56px; }
+  .lv-node__inner { width: 56px; height: 56px; font-size: 22px; }
+  .lv-node__inner .icon { width: 24px; height: 24px; }
+  .lv-link { display: none; }
+  .lv-stop:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 28px;
+    top: 80px;
+    bottom: -14px;
+    border-left: 4px dotted #CFC6F0;
+  }
+  .lv-stop.is-completed:not(:last-child)::before { border-color: var(--hill-1); }
+  .lv-card { width: auto; margin-left: 76px; flex: 1; }
+  .lv-pin .zuppy { --zp-w: 60px; }
+
+  .intro__panel { padding: 22px 18px; }
+  .intro__facts { grid-template-columns: 1fr; }
+  .intro__actions .btn { width: 100%; }
+  .res-stats { grid-template-columns: repeat(2, 1fr); }
+  .res-actions .btn,
+  .res-locked { width: 100%; justify-content: center; }
+  .stars--lg .star { width: 46px; height: 46px; }
+}

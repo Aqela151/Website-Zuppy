@@ -10,11 +10,13 @@
    Struktur progres:
    {
      points, level,
-     completedMaterials: ["subjectId/materialId", ...],
-     quizHistory: [{ subjectId, materialId, title, correct, total, score, xp, at }],
+     completedMaterials: ["subjectId/level-N", ...],
+     quizHistory: [{ subjectId, materialId, title, correct, total, score, xp, stars, at }],
      activityLog: [{ type: "material" | "quiz" | "challenge", title, xp, at, ... }],
      lastMaterial: { subjectId, materialId, title, progress } | null,
-     challengeClaims: { "YYYY-MM-DD": ["challengeId", ...] }
+     challengeClaims: { "YYYY-MM-DD": ["challengeId", ...] },
+     levelProgress: { "subjectId/level-N": { bestCorrect, bestScore, bestStars, bestXp, plays, completed } },
+     lastResult: { ... hasil permainan terakhir ... } | null
    }
 
    Catatan: autentikasi LocalStorage hanya untuk simulasi / demo,
@@ -29,8 +31,9 @@
     progress: (userId) => `zuppy_progress_${userId}`,
   };
 
-  const XP_PER_LEVEL = 200; // setiap 200 XP naik 1 level
+  const XP_PER_LEVEL = 200; // setiap 200 XP naik 1 level akun
   const MAX_LOG = 200;      // batas riwayat aktivitas yang disimpan
+  const MAX_HISTORY = 200;  // batas riwayat kuis yang disimpan
 
   /* ---------- Helper dasar ---------- */
   function read(key, fallback) {
@@ -166,7 +169,7 @@
     return user;
   }
 
-  /* ---------- Level ---------- */
+  /* ---------- Level akun ---------- */
   function levelFromPoints(points) {
     return Math.floor(Math.max(0, Number(points) || 0) / XP_PER_LEVEL) + 1;
   }
@@ -193,6 +196,8 @@
       activityLog: [],
       lastMaterial: null,
       challengeClaims: {},
+      levelProgress: {},
+      lastResult: null,
     };
   }
 
@@ -203,6 +208,7 @@
     if (!Array.isArray(progress.quizHistory)) progress.quizHistory = [];
     if (!Array.isArray(progress.activityLog)) progress.activityLog = [];
     if (!progress.challengeClaims || typeof progress.challengeClaims !== "object") progress.challengeClaims = {};
+    if (!progress.levelProgress || typeof progress.levelProgress !== "object") progress.levelProgress = {};
     progress.points = Math.max(0, Number(progress.points) || 0);
     progress.level = levelFromPoints(progress.points);
     return progress;
@@ -243,7 +249,7 @@
     return { isNew, progress };
   }
 
-  /** Simpan materi terakhir yang dibuka (untuk "Lanjutkan Belajar"). */
+  /** Simpan materi/level terakhir yang dibuka (untuk "Lanjutkan Belajar"). */
   function setLastMaterial(userId, { subjectId, materialId, title, progress: percent = 0 }) {
     const progress = getProgress(userId);
     const done = progress.completedMaterials.includes(`${subjectId}/${materialId}`);
@@ -257,7 +263,7 @@
     return progress;
   }
 
-  /** Simpan hasil kuis: riwayat, aktivitas, dan XP. */
+  /** Simpan hasil kuis biasa: riwayat, aktivitas, dan XP. */
   function recordQuizResult(userId, { subjectId, materialId, title, correct, total, xp = 0 }) {
     const progress = getProgress(userId);
     const score = total > 0 ? Math.round((correct / total) * 100) : 0;
@@ -269,6 +275,101 @@
     saveProgress(userId, progress);
     return progress;
   }
+
+  /* ---------- Level permainan ---------- */
+
+  /** Bintang: 5 benar = 3, 3-4 = 2, 1-2 = 1, 0 = 0 (untuk 5 soal). */
+  function calcStars(correct, total = 5) {
+    if (correct <= 0) return 0;
+    const ratio = correct / total;
+    if (ratio >= 1) return 3;
+    if (ratio >= 0.6) return 2;
+    return 1;
+  }
+
+  /**
+   * Simpan hasil permainan satu level.
+   * XP yang masuk hanya selisih dari XP terbaik level tersebut,
+   * sehingga main ulang tidak menggandakan XP.
+   */
+  function recordLevelResult(userId, { subjectId, levelNo, title, correct, total, stars, score, xpEarned }) {
+    const progress = getProgress(userId);
+    const levelId = `level-${levelNo}`;
+    const key = `${subjectId}/${levelId}`;
+    const prev = progress.levelProgress[key] || {
+      bestCorrect: 0, bestScore: 0, bestStars: 0, bestXp: 0, plays: 0, completed: false,
+    };
+
+    const xpGain = Math.max(0, xpEarned - prev.bestXp);
+    const isFirstClear = !prev.completed && stars >= 1;
+    const isNewBest = score > prev.bestScore;
+    const levelBefore = progress.level;
+
+    const record = {
+      bestCorrect: Math.max(prev.bestCorrect, correct),
+      bestScore: Math.max(prev.bestScore, score),
+      bestStars: Math.max(prev.bestStars, stars),
+      bestXp: Math.max(prev.bestXp, xpEarned),
+      plays: prev.plays + 1,
+      completed: prev.completed || stars >= 1,
+    };
+    progress.levelProgress[key] = record;
+
+    if (xpGain > 0) applyXP(progress, xpGain);
+
+    progress.quizHistory.push({
+      subjectId, materialId: levelId, title, correct, total, score, stars, xp: xpGain,
+      at: new Date().toISOString(),
+    });
+    if (progress.quizHistory.length > MAX_HISTORY) {
+      progress.quizHistory = progress.quizHistory.slice(-MAX_HISTORY);
+    }
+    pushActivity(progress, { type: "quiz", subjectId, materialId: levelId, title, correct, total, xp: xpGain });
+
+    if (record.completed && !progress.completedMaterials.includes(key)) {
+      progress.completedMaterials.push(key);
+    }
+
+    progress.lastMaterial = {
+      subjectId,
+      materialId: levelId,
+      title,
+      progress: record.completed ? 100 : Math.round((correct / total) * 100),
+    };
+
+    progress.lastResult = {
+      subjectId, levelNo, title, correct, total, stars, score,
+      xpEarned, xpGain, isFirstClear, isNewBest,
+      bestScore: record.bestScore,
+      leveledUp: progress.level > levelBefore,
+      newLevel: progress.level,
+      at: new Date().toISOString(),
+    };
+
+    const ok = saveProgress(userId, progress);
+    return { ok, xpGain, isFirstClear, isNewBest, record, progress };
+  }
+
+  /** Status semua level suatu mata pelajaran: terbuka, selesai, bintang, skor terbaik. */
+  function getLevelStatus(userId, subjectId, totalLevels) {
+    const progress = getProgress(userId);
+    const list = [];
+    for (let no = 1; no <= totalLevels; no += 1) {
+      const record = progress.levelProgress[`${subjectId}/level-${no}`] || null;
+      const previous = progress.levelProgress[`${subjectId}/level-${no - 1}`] || null;
+      list.push({
+        no,
+        unlocked: no === 1 || !!(previous && previous.completed),
+        completed: !!(record && record.completed),
+        stars: record ? record.bestStars : 0,
+        bestScore: record ? record.bestScore : 0,
+        plays: record ? record.plays : 0,
+      });
+    }
+    return list;
+  }
+
+  /* ---------- Tantangan harian & streak ---------- */
 
   /** Klaim hadiah tantangan harian (sekali per tantangan per hari). */
   function claimChallenge(userId, challengeId, xp, title) {
@@ -311,5 +412,6 @@
     dateKey, getLevelInfo,
     getProgress, saveProgress,
     completeMaterial, setLastMaterial, recordQuizResult, claimChallenge, getStreak,
+    calcStars, recordLevelResult, getLevelStatus,
   };
 })();
