@@ -2,7 +2,8 @@
    ZUPPY — Gameplay (pages/quiz.html)
    Petualangan 5 soal: Zuppy berjalan di jalur sambil siswa menjawab.
    Hasil disimpan sekali di akhir permainan, lalu menuju result.html.
-   Bergantung pada: components.js, storage.js, game.js,
+   Musik & efek suara: js/audio.js (ZuppyAudio), dengan tombol mute.
+   Bergantung pada: components.js, storage.js, game.js, audio.js,
    data/subjects.js, data/questions.js
    ========================================================== */
 (() => {
@@ -11,6 +12,10 @@
   const Storage = window.ZuppyStorage;
   const Data = window.ZuppyData || {};
   const Game = window.ZuppyGame;
+  const Sound = window.ZuppyAudio || {
+    unlock() {}, play() {}, stopMusic() {}, setMusic() {}, setSfx() {},
+    isMusicOn: () => false, isSfxOn: () => false,
+  };
 
   const user = Storage.requireAuth("login.html");
   if (!user) return;
@@ -44,7 +49,7 @@
   });
   const total = prepared.length;
 
-  const state = { idx: 0, correct: 0, answered: false, busy: false, finished: false };
+  const state = { idx: 0, correct: 0, answered: false, busy: false, finished: false, results: [] };
 
   /* ---------- Elemen ---------- */
   const $ = (id) => document.getElementById(id);
@@ -54,7 +59,7 @@
     quest: $("quest"), narration: $("narration"), qType: $("qType"), qCount: $("qCount"), qText: $("qText"),
     qOptions: $("qOptions"), feedback: $("feedback"), fbTitle: $("fbTitle"), fbText: $("fbText"), nextBtn: $("nextBtn"),
     trailNodes: $("trailNodes"), walker: $("walker"), bubble: $("bubble"), mascot: $("mascot"),
-    exitBtn: $("exitBtn"),
+    exitBtn: $("exitBtn"), musicBtn: $("musicBtn"), sfxBtn: $("sfxBtn"),
   };
 
   const esc = (value) =>
@@ -84,8 +89,23 @@
       `Zuppy memasuki ${place}. Gerbang pertama menghadang!`,
       `Jalan setapak menuju jantung ${place}. Rintangan kedua muncul!`,
       `Setengah perjalanan! Kabut tebal menyelimuti ${place}.`,
-      `Tujuan mulai terlihat. Tinggal beberapa rintangan lagi!`,
+      "Tujuan mulai terlihat. Tinggal beberapa rintangan lagi!",
     ][Math.min(idx, 3)];
+  }
+
+  /* ---------- Tombol suara ---------- */
+  function syncAudioButtons() {
+    [
+      [el.musicBtn, Sound.isMusicOn(), "musik"],
+      [el.sfxBtn, Sound.isSfxOn(), "efek suara"],
+    ].forEach(([btn, on, label]) => {
+      if (!btn) return;
+      btn.classList.toggle("is-off", !on);
+      btn.setAttribute("aria-pressed", String(on));
+      const text = `${on ? "Matikan" : "Nyalakan"} ${label}`;
+      btn.setAttribute("aria-label", text);
+      btn.title = text;
+    });
   }
 
   /* ---------- Setup tampilan ---------- */
@@ -115,7 +135,6 @@
       seg.classList.toggle("is-wrong", result === false);
     });
   }
-  state.results = [];
 
   function moveMascot(animate = true) {
     const x = total > 1 ? (state.idx / (total - 1)) * 100 : 50;
@@ -177,6 +196,8 @@
     if (!picked) return;
 
     state.answered = true;
+    Sound.play("select");
+
     const isCorrect = picked.correct;
     state.results[state.idx] = isCorrect;
     if (isCorrect) state.correct += 1;
@@ -205,17 +226,19 @@
       ? q.explain
       : `Jawaban yang benar: ${correctText}. ${q.explain}`;
 
-    // Efek & maskot
+    // Efek, suara & maskot
     if (isCorrect) {
       const gain = document.createElement("span");
       gain.className = "float-xp";
       gain.textContent = `+${CONFIG.xpPerCorrect} XP`;
       el.quest.appendChild(gain);
       window.setTimeout(() => gain.remove(), 1200);
+      window.setTimeout(() => Sound.play("correct"), 130);
       Game.setMood(el.mascot, "happy", { revertMs: 1500, revertTo: baseMood() });
       say(SAY.correct);
     } else {
       Game.restartAnim(el.quest, "is-shake");
+      window.setTimeout(() => Sound.play("wrong"), 130);
       Game.setMood(el.mascot, "confused", { revertMs: 1700, revertTo: baseMood() });
       say(SAY.wrong);
     }
@@ -233,6 +256,7 @@
     if (state.idx >= total - 1) { finish(); return; }
 
     state.busy = true;
+    Sound.play("next");
     el.quest.classList.add("is-leaving");
     window.setTimeout(() => {
       state.idx += 1;
@@ -261,10 +285,12 @@
       subjectId, levelNo, title: level.title, correct, total, stars, score, xpEarned,
     });
 
+    Sound.stopMusic(0.6);
+    Sound.play(stars > 0 ? "finish" : "lose");
     Game.setMood(el.mascot, stars > 0 ? "victory" : "confused");
     window.setTimeout(() => {
       window.location.assign(`result.html?subject=${encodeURIComponent(subjectId)}&id=level-${levelNo}`);
-    }, 700);
+    }, 900);
   }
 
   /* ---------- Modal keluar ---------- */
@@ -302,6 +328,23 @@
   }
 
   /* ---------- Event ---------- */
+  // Browser baru mengizinkan suara setelah ada interaksi pengguna
+  ["pointerdown", "click", "touchend", "keydown"].forEach((type) => {
+    window.addEventListener(type, () => Sound.unlock(), { capture: true, passive: true });
+  });
+
+  el.musicBtn.addEventListener("click", () => {
+    Sound.setMusic(!Sound.isMusicOn());
+    syncAudioButtons();
+    Sound.play("toggle");
+  });
+
+  el.sfxBtn.addEventListener("click", () => {
+    Sound.setSfx(!Sound.isSfxOn());
+    syncAudioButtons();
+    Sound.play("toggle");
+  });
+
   el.qOptions.addEventListener("click", (event) => {
     const btn = event.target.closest(".opt");
     if (btn) answer(Number(btn.dataset.i));
@@ -332,8 +375,9 @@
     // Pintasan keyboard: 1-4 atau A-D memilih jawaban, Enter melanjutkan
     if (!state.answered) {
       const key = event.key.toLowerCase();
-      const index = "1234".includes(key) && key ? Number(key) - 1 : "abcd".indexOf(key);
-      if (index >= 0 && index < prepared[state.idx].items.length && key.length === 1) answer(index);
+      if (key.length !== 1) return;
+      const index = "1234".includes(key) ? Number(key) - 1 : "abcd".indexOf(key);
+      if (index >= 0 && index < prepared[state.idx].items.length) answer(index);
     } else if (event.key === "Enter" && event.target.tagName !== "BUTTON") {
       next();
     }
@@ -351,6 +395,7 @@
   document.title = `${level.title} — Zuppy`;
 
   Game.mount(document);
+  syncAudioButtons();
   buildTrail();
   moveMascot(false);
   renderQuestion();
