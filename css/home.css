@@ -181,7 +181,7 @@ section[id] { scroll-margin-top: 96px; }
 .tone-turquoise { background: var(--turquoise); color: var(--ink); }
 .tone-purple { background: var(--purple-soft); color: var(--purple); }
 
-/* ---------- Mata pelajaran ---------- */
+/* ---------- Mata pelajaran (satu warna unik per mapel) ---------- */
 .subject-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
 
 .subject-card {
@@ -206,6 +206,8 @@ section[id] { scroll-margin-top: 96px; }
 .subject-card--turquoise { --accent: var(--turquoise); --accent-soft: var(--turquoise-soft); --accent-ink: #137F74; --on-accent: var(--ink); }
 .subject-card--pink { --accent: var(--pink); --accent-soft: var(--pink-soft); --accent-ink: #C42E6E; --on-accent: var(--white); }
 .subject-card--yellow { --accent: var(--yellow); --accent-soft: var(--yellow-soft); --accent-ink: #8A6A00; --on-accent: var(--ink); }
+.subject-card--blue { --accent: #2672D9; --accent-soft: #E3EEFF; --accent-ink: #1B56A8; --on-accent: var(--white); }
+.subject-card--orange { --accent: #FF8A3D; --accent-soft: #FFEDE0; --accent-ink: #B84A0A; --on-accent: var(--ink); }
 
 .subject-card__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
 .subject-card__icon { display: grid; place-items: center; width: 44px; height: 44px; background: var(--accent-soft); color: var(--accent-ink); border-radius: 12px; }

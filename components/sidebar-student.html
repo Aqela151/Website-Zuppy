@@ -1,6 +1,6 @@
 <aside class="sidebar" id="sidebar" aria-label="Menu siswa">
   <div class="sidebar__top">
-    <a class="brand" data-href="index.html" aria-label="Zuppy — Beranda">
+    <a class="brand" data-href="pages/dashboard-student.html" aria-label="Zuppy — Dashboard">
       <span class="brand-logo"><img data-src="assets/images/logo/logo.png" alt="Zuppy"></span>
     </a>
     <button class="sidebar__close" type="button" data-sidebar-close aria-label="Tutup menu">
@@ -29,10 +29,16 @@
     </ul>
   </nav>
 
+  <div class="sidebar-tip">
+    <div class="mascot sidebar-tip__mascot"><img data-src="assets/images/mascot/maskot.png" alt=""></div>
+    <p class="sidebar-tip__title">Tips dari Zuppy</p>
+    <p class="sidebar-tip__text">Belajar sedikit tapi rutin lebih ampuh daripada sekali lama. Yuk selesaikan 1 level hari ini!</p>
+  </div>
+
   <div class="sidebar__footer">
-    <a class="sidebar__link" data-href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
-      Kembali ke Home</a>
+    <a class="sidebar__link sidebar__back" data-href="pages/dashboard-student.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      Kembali ke Dashboard</a>
     <a class="sidebar__link sidebar__link--logout" data-action="logout" data-href="pages/login.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
       Logout</a>

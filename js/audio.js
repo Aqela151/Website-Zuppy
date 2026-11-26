@@ -1,19 +1,22 @@
 /* ==========================================================
    ZUPPY — Audio (musik latar + efek suara)
    Semua suara dibuat dengan Web Audio API (tanpa file audio).
-   - Musik: loop 8 birama bernuansa ceria
+   - Musik "game": loop ceria untuk gameplay (tanpa batas)
+   - Musik "victory": loop kemenangan untuk halaman hasil (3 putaran lalu memudar)
    - Efek: select, correct, wrong, next, finish, lose, toggle
    - Preferensi mute disimpan di LocalStorage ("zuppy_audio")
 
    Browser memblokir suara sebelum ada interaksi pengguna, jadi
    panggil ZuppyAudio.unlock() dari klik / tombol pertama.
+
+   Halaman hasil: <body data-music="victory"> menyalakan fanfare + musik
+   kemenangan otomatis (bila bintang > 0). Tombol [data-audio-toggle="music"]
+   dan elemen #audioHint dikelola otomatis.
    ========================================================== */
 (() => {
   "use strict";
 
   const STORE_KEY = "zuppy_audio";
-  const BPM = 120;
-  const STEP = 60 / BPM / 2;     // satu langkah = not 1/8 (0,25 detik)
   const MUSIC_VOL = 0.2;
   const SFX_VOL = 0.55;
 
@@ -48,8 +51,13 @@
   let timer = null;
   let nextTime = 0;
   let step = 0;
+  let loopCount = 0;
   let musicRunning = false;
   let ready = false;
+
+  let desiredTrack = "game";
+  let currentTrack = "game";
+  let readyHook = null;
 
   function ensureCtx() {
     if (ctx) return ctx;
@@ -120,49 +128,94 @@
   }
 
   /* ---------- Musik ---------- */
-  // Akor per birama: C - Am - F - G (diulang dua kali)
-  const ROOTS = [48, 45, 41, 43, 48, 45, 41, 43];
+  // Setiap track: 8 birama x 8 not (1/8). roots = nada bass per birama,
+  // melody = melodi per birama (null = jeda). loops 0 = tanpa batas.
+  const TRACKS = {
+    // Gameplay: C - Am - F - G
+    game: {
+      bpm: 120,
+      loops: 0,
+      roots: [48, 45, 41, 43, 48, 45, 41, 43],
+      melody: [
+        [76, 79, 84, 79, 76, 79, 74, 72],
+        [81, 79, 76, 72, 76, 79, 81, null],
+        [77, 81, 84, 81, 77, 81, 79, 77],
+        [79, 83, 86, 83, 79, 74, 71, null],
+        [72, 76, 79, 76, 72, 76, 79, 84],
+        [81, 84, 81, 79, 76, 79, 76, 72],
+        [77, 79, 81, 84, 81, 79, 77, 74],
+        [79, 79, 83, 74, 79, 83, 86, null],
+      ],
+      leadVol: 0.3,
+      bassVol: 0.55,
+    },
+    // Kemenangan: G - D - Em - C - G - D - C - D
+    victory: {
+      bpm: 132,
+      loops: 3,
+      roots: [55, 50, 52, 48, 55, 50, 48, 50],
+      melody: [
+        [79, 83, 86, 83, 79, 83, 86, 83],
+        [78, 81, 86, 81, 78, 81, 86, 81],
+        [76, 79, 83, 79, 76, 79, 83, 79],
+        [84, 79, 76, 79, 84, 79, 76, 72],
+        [74, 76, 79, 83, 86, 83, 79, 76],
+        [74, 78, 81, 78, 74, 78, 81, 86],
+        [72, 76, 79, 84, 79, 76, 72, null],
+        [74, 78, 81, 86, 81, 78, 74, null],
+      ],
+      leadVol: 0.28,
+      bassVol: 0.5,
+    },
+  };
 
-  // Melodi: 8 not per birama (null = jeda)
-  const MELODY = [
-    [76, 79, 84, 79, 76, 79, 74, 72],
-    [81, 79, 76, 72, 76, 79, 81, null],
-    [77, 81, 84, 81, 77, 81, 79, 77],
-    [79, 83, 86, 83, 79, 74, 71, null],
-    [72, 76, 79, 76, 72, 76, 79, 84],
-    [81, 84, 81, 79, 76, 79, 76, 72],
-    [77, 79, 81, 84, 81, 79, 77, 74],
-    [79, 79, 83, 74, 79, 83, 86, null],
-  ];
-
-  function playStep(index, time) {
-    const bar = Math.floor(index / 8) % 8;
+  function playStep(track, index, time) {
+    const bar = Math.floor(index / 8) % track.roots.length;
     const pos = index % 8;
-    const root = ROOTS[bar];
+    const root = track.roots[bar];
+    const stepTime = 60 / track.bpm / 2;
 
     if (pos % 2 === 0) {
       const bassNote = pos % 4 === 0 ? root : root + 7;
-      voice(musicGain, midiToHz(bassNote), time, STEP * 1.8, "triangle", 0.55);
+      voice(musicGain, midiToHz(bassNote), time, stepTime * 1.8, "triangle", track.bassVol);
     }
 
-    const note = MELODY[bar][pos];
-    if (note) voice(leadBus, midiToHz(note), time, STEP * 0.9, "square", 0.3);
+    const note = track.melody[bar][pos];
+    if (note) voice(leadBus, midiToHz(note), time, stepTime * 0.9, "square", track.leadVol);
 
     hat(time, pos % 2 ? 0.12 : 0.06);
   }
 
   function schedule() {
     if (!ctx || !musicRunning) return;
+    const track = TRACKS[currentTrack];
+    const stepTime = 60 / track.bpm / 2;
+    const total = track.roots.length * 8;
+
     while (nextTime < ctx.currentTime + 0.3) {
-      playStep(step, nextTime);
-      nextTime += STEP;
-      step = (step + 1) % 64;
+      playStep(track, step, nextTime);
+      nextTime += stepTime;
+      step += 1;
+      if (step >= total) {
+        step = 0;
+        loopCount += 1;
+        if (track.loops && loopCount >= track.loops) {
+          stopMusic(1.6); // selesai: memudar pelan
+          return;
+        }
+      }
     }
   }
 
-  function startMusic() {
+  function startMusic(name = desiredTrack) {
     const c = ensureCtx();
-    if (!c || musicRunning || !ready) return;
+    if (!c || !ready || !TRACKS[name]) return;
+    if (musicRunning && currentTrack === name) return;
+    window.clearInterval(timer);
+
+    currentTrack = name;
+    step = 0;
+    loopCount = 0;
     musicRunning = true;
     nextTime = c.currentTime + 0.08;
     musicGain.gain.cancelScheduledValues(c.currentTime);
@@ -217,18 +270,29 @@
   }
 
   /* ---------- Kontrol ---------- */
+  const hintEl = () => document.getElementById("audioHint");
+
+  function hideHint() {
+    const el = hintEl();
+    if (el) el.hidden = true;
+  }
+
+  function becomeReady() {
+    if (ready) return;
+    ready = true;
+    hideHint();
+    if (readyHook) readyHook();
+    else if (prefs.music) startMusic();
+  }
+
   /** Panggil dari interaksi pengguna agar browser mengizinkan suara. */
   function unlock() {
     const c = ensureCtx();
     if (!c) return;
     if (c.state === "suspended") {
-      c.resume().then(() => {
-        ready = true;
-        if (prefs.music) startMusic();
-      }).catch(() => { /* abaikan */ });
-    } else if (!ready) {
-      ready = true;
-      if (prefs.music) startMusic();
+      c.resume().then(becomeReady).catch(() => { /* abaikan */ });
+    } else {
+      becomeReady();
     }
   }
 
@@ -250,6 +314,62 @@
     if (document.hidden) ctx.suspend();
     else if (ready) ctx.resume();
   });
+
+  /* ---------- Tombol toggle otomatis ([data-audio-toggle]) ---------- */
+  function bindToggles() {
+    document.querySelectorAll("[data-audio-toggle]").forEach((btn) => {
+      const kind = btn.dataset.audioToggle;
+
+      const sync = () => {
+        const on = kind === "music" ? prefs.music : prefs.sfx;
+        const label = `${on ? "Matikan" : "Nyalakan"} ${kind === "music" ? "musik" : "efek suara"}`;
+        btn.classList.toggle("is-off", !on);
+        btn.setAttribute("aria-pressed", String(on));
+        btn.setAttribute("aria-label", label);
+        btn.title = label;
+      };
+
+      btn.addEventListener("click", () => {
+        if (kind === "music") setMusic(!prefs.music);
+        else setSfx(!prefs.sfx);
+        sync();
+        play("toggle");
+      });
+      sync();
+    });
+  }
+
+  /* ---------- Halaman hasil: <body data-music="victory"> ---------- */
+  function initResultPage() {
+    // Bintang dihitung dari tampilan hasil (learning.js dimuat lebih dulu)
+    const earned = document.querySelectorAll(".stars--lg .star.is-on").length;
+    desiredTrack = "victory";
+
+    readyHook = () => {
+      if (earned > 0) {
+        play("finish");
+        window.setTimeout(() => {
+          if (prefs.music && ready) startMusic("victory");
+        }, 900);
+      } else {
+        play("lose");
+      }
+    };
+
+    ["pointerdown", "click", "touchend", "keydown"].forEach((type) => {
+      window.addEventListener(type, unlock, { capture: true, passive: true });
+    });
+
+    // Coba otomatis; bila diblokir browser, tampilkan petunjuk
+    unlock();
+    window.setTimeout(() => {
+      const hint = hintEl();
+      if (!ready && prefs.music && hint) hint.hidden = false;
+    }, 800);
+  }
+
+  bindToggles();
+  if (document.body.dataset.music === "victory") initResultPage();
 
   window.ZuppyAudio = {
     unlock,

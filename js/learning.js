@@ -13,7 +13,6 @@
   const Storage = window.ZuppyStorage;
   const Data = window.ZuppyData || {};
   const Game = window.ZuppyGame;
-  const Components = window.ZuppyComponents;
 
   const user = Storage.requireAuth("login.html");
   if (!user) return;
@@ -174,7 +173,7 @@
     }).join("");
 
     root.innerHTML = `
-      <a class="lv-back" href="${Components.withRoot("index.html#mapel")}">${ICON.back} Kembali ke Home</a>
+      <a class="lv-back" href="dashboard-student.html">${ICON.back} Kembali ke Dashboard</a>
 
       <section class="lv-hero scene-box" data-theme="${esc(subject.accent)}">
         <div class="scene" data-scene></div>

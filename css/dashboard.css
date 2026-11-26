@@ -20,6 +20,28 @@
 .dash-main section[id] { scroll-margin-top: 24px; }
 #top { display: grid; gap: 24px; }
 
+/* ---------- Sidebar: kartu tips & tombol kembali ---------- */
+.sidebar-tip {
+  margin-top: auto;
+  padding: 14px 14px 16px;
+  text-align: center;
+  background: var(--purple-tint);
+  border: 1px dashed #CFC6F0;
+  border-radius: var(--radius-md);
+}
+.sidebar-tip__mascot { width: 96px; margin: 0 auto 6px; }
+.sidebar-tip__title { font-family: var(--font-heading); font-size: 14px; font-weight: 800; }
+.sidebar-tip__text { margin-top: 4px; font-size: 12px; line-height: 1.5; color: var(--muted); }
+.sidebar-tip + .sidebar__footer { margin-top: 16px; }
+
+/* Di halaman dashboard, tombol "Kembali ke Dashboard" tidak diperlukan */
+body[data-page="dashboard"] .sidebar__back { display: none; }
+
+@media (max-height: 760px) {
+  .sidebar-tip { display: none; }
+  .sidebar-tip + .sidebar__footer { margin-top: auto; }
+}
+
 /* ---------- Topbar ---------- */
 .dash-topbar { display: flex; align-items: center; gap: 16px; }
 .dash-topbar__text { flex: 1; min-width: 0; }
@@ -47,7 +69,7 @@
 }
 .dash-menu-btn svg { width: 22px; height: 22px; }
 
-/* ---------- Profil + dropdown (BARU) ---------- */
+/* ---------- Profil + dropdown ---------- */
 .dash-profile { position: relative; flex-shrink: 0; }
 
 .dash-user {
@@ -258,7 +280,7 @@
 .dash-task__count { min-width: 32px; text-align: right; font-size: 12px; font-weight: 800; color: var(--muted); }
 .dash-xp { flex-shrink: 0; padding: 3px 10px; background: var(--yellow); border-radius: var(--radius-pill); font-size: 11px; font-weight: 800; }
 
-/* ---------- Mata pelajaran ---------- */
+/* ---------- Mata pelajaran (satu warna unik per mapel) ---------- */
 .dash-subjects { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .dash-subject {
   --accent: var(--purple);
@@ -281,6 +303,8 @@
 .dash-subject--turquoise { --accent: var(--turquoise); --accent-soft: var(--turquoise-soft); --accent-ink: #137F74; }
 .dash-subject--pink { --accent: var(--pink); --accent-soft: var(--pink-soft); --accent-ink: #C42E6E; }
 .dash-subject--yellow { --accent: var(--yellow); --accent-soft: var(--yellow-soft); --accent-ink: #8A6A00; }
+.dash-subject--blue { --accent: #2672D9; --accent-soft: #E3EEFF; --accent-ink: #1B56A8; }
+.dash-subject--orange { --accent: #FF8A3D; --accent-soft: #FFEDE0; --accent-ink: #B84A0A; }
 
 .dash-subject__top { display: flex; align-items: center; justify-content: space-between; }
 .dash-subject__icon { display: grid; place-items: center; width: 44px; height: 44px; background: var(--accent-soft); color: var(--accent-ink); border-radius: 12px; }
@@ -288,7 +312,8 @@
 .dash-subject__go .icon { width: 16px; height: 16px; }
 .dash-subject:hover .dash-subject__go { background: var(--accent); color: var(--ink); transform: translateX(3px); }
 .dash-subject--purple:hover .dash-subject__go,
-.dash-subject--pink:hover .dash-subject__go { color: var(--white); }
+.dash-subject--pink:hover .dash-subject__go,
+.dash-subject--blue:hover .dash-subject__go { color: var(--white); }
 .dash-subject h3 { font-size: 17px; }
 .dash-subject p { flex: 1; font-size: 13px; color: var(--muted); }
 .dash-subject__meta { font-size: 12px; font-weight: 800; color: var(--accent-ink); }

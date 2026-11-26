@@ -1,10 +1,10 @@
 /* ==========================================================
    ZUPPY — Data mata pelajaran
-   Dipakai dashboard dan halaman Mata Pelajaran.
+   Dipakai dashboard, Home, dan halaman Mata Pelajaran.
    `icon` berisi isi SVG (viewBox 24x24, gaya garis).
-   `accent`: purple | turquoise | pink | yellow
+   `accent` (warna unik per mapel): purple | turquoise | pink | yellow | blue | orange
    Jumlah materi dihitung dari window.ZuppyData.materials
-   (data/materials.js, dibuat pada tahap Learning System).
+   (dibuat otomatis oleh data/questions.js).
    ========================================================== */
 window.ZuppyData = window.ZuppyData || {};
 
@@ -46,7 +46,7 @@ window.ZuppyData.subjects = [
     name: "IPS",
     tag: "Dunia & Masyarakat",
     description: "Pelajari dinamika masyarakat, sejarah, dan geografi nusantara.",
-    accent: "turquoise",
+    accent: "blue",
     icon: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   },
   {
@@ -54,7 +54,7 @@ window.ZuppyData.subjects = [
     name: "Pendidikan Pancasila",
     tag: "Karakter & Nilai",
     description: "Pahami kebhinekaan, norma hukum, toleransi, serta hak dan kewajiban.",
-    accent: "purple",
+    accent: "orange",
     icon: '<path d="M3 21h18M5 21V10M9 21V10M15 21V10M19 21V10M2 10l10-7 10 7z"/>',
   },
 ];
