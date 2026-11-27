@@ -1,0 +1,105 @@
+/* ==========================================================
+   ZUPPY — Halaman Profil Siswa
+   Memakai layout dari dashboard.css, serta .field/.input/.alert dari auth.css.
+   ========================================================== */
+
+.pf { display: grid; gap: 24px; min-width: 0; }
+
+/* ---------- Kartu profil ---------- */
+.pf-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 32px;
+  overflow: hidden;
+  color: var(--white);
+  background:
+    radial-gradient(420px 220px at 100% 0%, rgba(255, 255, 255, 0.18), transparent 70%),
+    var(--purple);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-purple);
+}
+
+.pf-avatar {
+  display: grid;
+  place-items: center;
+  width: 96px; height: 96px;
+  flex-shrink: 0;
+  background: var(--yellow);
+  color: var(--ink);
+  border: 4px solid var(--white);
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(35, 26, 69, 0.25);
+  font-family: var(--font-heading);
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.pf-hero__info { position: relative; z-index: 1; flex: 1; min-width: 0; }
+.pf-hero__info h1 { font-size: clamp(24px, 3.2vw, 32px); color: var(--white); overflow-wrap: anywhere; }
+.pf-hero__handle { margin-top: 2px; font-weight: 700; opacity: 0.92; }
+.pf-hero__email { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 14px; opacity: 0.92; word-break: break-all; }
+.pf-hero__email .icon { width: 16px; height: 16px; }
+.pf-hero__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.pf-chip { padding: 4px 12px; background: rgba(255, 255, 255, 0.18); border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; }
+.pf-hero .mascot { width: 150px; flex-shrink: 0; }
+
+/* ---------- Statistik ---------- */
+.pf-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* ---------- Form ---------- */
+.pf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.pf-form { display: grid; gap: 16px; }
+.pf-form .alert { margin-bottom: 0; }
+.pf-form .btn { justify-self: start; }
+.pf-form .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+.pf-note { margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+
+/* ---------- Progres per mata pelajaran ---------- */
+.pf-subjects { display: grid; }
+.pf-subject {
+  --accent: var(--purple);
+  --accent-soft: var(--purple-soft);
+  --accent-ink: var(--purple-dark);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.pf-subject:first-child { border-top: 0; padding-top: 0; }
+.pf-subject:last-child { padding-bottom: 0; }
+.pf-subject--turquoise { --accent: var(--turquoise); --accent-soft: var(--turquoise-soft); --accent-ink: #137F74; }
+.pf-subject--pink { --accent: var(--pink); --accent-soft: var(--pink-soft); --accent-ink: #C42E6E; }
+.pf-subject--yellow { --accent: var(--yellow); --accent-soft: var(--yellow-soft); --accent-ink: #8A6A00; }
+.pf-subject--blue { --accent: #2672D9; --accent-soft: #E3EEFF; --accent-ink: #1B56A8; }
+.pf-subject--orange { --accent: #FF8A3D; --accent-soft: #FFEDE0; --accent-ink: #B84A0A; }
+
+.pf-subject__icon { display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; background: var(--accent-soft); color: var(--accent-ink); border-radius: 12px; }
+.pf-subject__body { flex: 1; min-width: 0; }
+.pf-subject__name { font-size: 14px; font-weight: 800; }
+.pf-subject__meta { font-size: 12px; color: var(--muted); }
+.pf-subject .dash-progress { flex: none; height: 6px; margin-top: 8px; background: var(--accent-soft); }
+.pf-subject .dash-progress__fill { background: var(--accent); }
+.pf-subject__pct { flex-shrink: 0; font-size: 13px; font-weight: 800; color: var(--accent-ink); }
+
+/* ==========================================================
+   Responsive
+   ========================================================== */
+@media (max-width: 1100px) {
+  .pf-stats { grid-template-columns: repeat(2, 1fr); }
+  .pf-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .pf-hero { flex-direction: column; align-items: center; gap: 16px; padding: 24px 20px; text-align: center; }
+  .pf-hero__chips,
+  .pf-hero__email { justify-content: center; }
+  .pf-hero .mascot { display: none; }
+  .pf-form .btn { justify-self: stretch; }
+}
+
+@media (max-width: 420px) {
+  .pf-stats { grid-template-columns: 1fr; }
+}

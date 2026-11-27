@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil Saya — Zuppy</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/home.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/auth.css">
+  <link rel="stylesheet" href="../css/profile.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <script src="../js/components.js" defer></script>
+  <script src="../js/storage.js" defer></script>
+  <script src="../js/navigation.js" defer></script>
+  <script src="../data/subjects.js" defer></script>
+  <script src="../data/questions.js" defer></script>
+  <script src="../js/profile.js" defer></script>
+</head>
+<body data-root="../" data-page="profile" data-auth="required">
+
+  <div class="dashboard-layout">
+    <div data-component="sidebar-student"></div>
+
+    <main class="dash-main">
+      <!-- ============ HEADER ============ -->
+      <header class="dash-topbar">
+        <button class="dash-menu-btn" type="button" data-sidebar-toggle aria-label="Buka menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <div class="dash-topbar__text">
+          <p class="dash-topbar__greeting" id="topGreeting"></p>
+          <p class="dash-topbar__name" id="topName"></p>
+        </div>
+
+        <div class="dash-profile" data-dropdown>
+          <button class="dash-user" type="button" data-dropdown-toggle aria-haspopup="menu" aria-expanded="false" aria-controls="profileMenu">
+            <span class="dash-avatar" id="topAvatar" aria-hidden="true"></span>
+            <span class="dash-user__meta">
+              <strong id="topUserName"></strong>
+              <span id="topUserHandle"></span>
+            </span>
+            <svg class="icon dash-user__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+
+          <div class="dash-menu" id="profileMenu" role="menu" aria-label="Menu profil" data-dropdown-menu>
+            <a class="dash-menu__item" role="menuitem" data-href="pages/profile.html">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+              Profil Saya
+            </a>
+            <span class="dash-menu__divider" role="separator"></span>
+            <button class="dash-menu__item dash-menu__item--danger" type="button" role="menuitem" data-action="logout">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="pf">
+        <!-- ============ KARTU PROFIL ============ -->
+        <section class="pf-hero" aria-labelledby="pfName">
+          <div class="pf-avatar" id="pfAvatar" aria-hidden="true"></div>
+          <div class="pf-hero__info">
+            <h1 id="pfName"></h1>
+            <p class="pf-hero__handle" id="pfHandle"></p>
+            <p class="pf-hero__email">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 6 10-6"/></svg>
+              <span id="pfEmail"></span>
+            </p>
+            <div class="pf-hero__chips">
+              <span class="badge badge--yellow">Siswa</span>
+              <span class="pf-chip" id="pfLevel"></span>
+              <span class="pf-chip" id="pfJoined"></span>
+            </div>
+          </div>
+          <div class="mascot"><img data-src="assets/images/mascot/maskot.png" alt="Zuppy, maskot belajar yang ceria"></div>
+        </section>
+
+        <!-- ============ STATISTIK ============ -->
+        <section class="pf-stats" id="pfStats" aria-label="Statistik belajar"></section>
+
+        <!-- ============ EDIT PROFIL & GANTI PASSWORD ============ -->
+        <div class="pf-grid">
+          <section class="dash-card" aria-labelledby="editTitle">
+            <header class="dash-card__head"><h2 id="editTitle">Edit Profil</h2></header>
+            <p class="pf-note">Ubah data akunmu. Progres belajar dan XP tidak akan berubah.</p>
+
+            <form class="pf-form" id="profileForm" novalidate>
+              <div class="field">
+                <label for="pfFullName">Nama Lengkap</label>
+                <div class="input">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                  <input id="pfFullName" name="fullName" type="text" autocomplete="name" aria-describedby="pfFullName-error" required>
+                </div>
+                <p class="field__error" id="pfFullName-error"></p>
+              </div>
+
+              <div class="field">
+                <label for="pfUsername">Username</label>
+                <div class="input">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
+                  <input id="pfUsername" name="username" type="text" autocomplete="username" aria-describedby="pfUsername-hint pfUsername-error" required>
+                </div>
+                <p class="field__hint" id="pfUsername-hint">3–20 karakter: huruf, angka, titik, atau underscore.</p>
+                <p class="field__error" id="pfUsername-error"></p>
+              </div>
+
+              <div class="field">
+                <label for="pfEmailInput">Email</label>
+                <div class="input">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m2 7 10 6 10-6"/></svg>
+                  <input id="pfEmailInput" name="email" type="email" autocomplete="email" aria-describedby="pfEmailInput-error" required>
+                </div>
+                <p class="field__error" id="pfEmailInput-error"></p>
+              </div>
+
+              <div class="alert" id="profileAlert" role="alert" hidden></div>
+
+              <button class="btn btn--primary" type="submit">
+                <span class="btn__label">Simpan Perubahan</span>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 9.5 18 20 6.5"/></svg>
+              </button>
+            </form>
+          </section>
+
+          <section class="dash-card" aria-labelledby="passTitle">
+            <header class="dash-card__head"><h2 id="passTitle">Ganti Password</h2></header>
+            <p class="pf-note">Gunakan kombinasi huruf dan angka, minimal 8 karakter.</p>
+
+            <form class="pf-form" id="passwordForm" novalidate>
+              <div class="field">
+                <label for="pfCurrent">Password Lama</label>
+                <div class="input">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                  <input id="pfCurrent" name="currentPassword" type="password" autocomplete="current-password" aria-describedby="pfCurrent-error">
+                  <button class="input__toggle" type="button" data-toggle-password="pfCurrent" aria-label="Tampilkan password" aria-pressed="false">
+                    <svg class="icon icon-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg class="icon icon-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.7A16.8 16.8 0 0 0 2 12s3.5 7 10 7a10.5 10.5 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                  </button>
+                </div>
+                <p class="field__error" id="pfCurrent-error"></p>
+              </div>
+
+              <div class="field">
+                <label for="pfNew">Password Baru</label>
+                <div class="input">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                  <input id="pfNew" name="newPassword" type="password" autocomplete="new-password" aria-describedby="pfNew-error">
+                  <button class="input__toggle" type="button" data-toggle-password="pfNew" aria-label="Tampilkan password" aria-pressed="false">
+                    <svg class="icon icon-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg class="icon icon-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.7A16.8 16.8 0 0 0 2 12s3.5 7 10 7a10.5 10.5 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                  </button>
+                </div>
+                <p class="field__error" id="pfNew-error"></p>
+              </div>
+
+              <div class="field">
+                <label for="pfConfirm">Konfirmasi Password Baru</label>
+                <div class="input">
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                  <input id="pfConfirm" name="confirmPassword" type="password" autocomplete="new-password" aria-describedby="pfConfirm-error">
+                  <button class="input__toggle" type="button" data-toggle-password="pfConfirm" aria-label="Tampilkan password" aria-pressed="false">
+                    <svg class="icon icon-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg class="icon icon-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.7 10.7 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.7A16.8 16.8 0 0 0 2 12s3.5 7 10 7a10.5 10.5 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                  </button>
+                </div>
+                <p class="field__error" id="pfConfirm-error"></p>
+              </div>
+
+              <div class="alert" id="passwordAlert" role="alert" hidden></div>
+
+              <button class="btn btn--primary" type="submit">
+                <span class="btn__label">Ganti Password</span>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+              </button>
+            </form>
+          </section>
+        </div>
+
+        <!-- ============ PROGRES PER MATA PELAJARAN ============ -->
+        <section class="dash-card" aria-labelledby="subjTitle">
+          <header class="dash-card__head"><h2 id="subjTitle">Progres Mata Pelajaran</h2></header>
+          <div class="pf-subjects" id="pfSubjects"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>

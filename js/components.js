@@ -1,6 +1,8 @@
 /* ==========================================================
    ZUPPY — Component loader
-   - Memuat semua <div data-component="nama"> dari /components
+   - Memuat semua <div data-component="nama">:
+       * komponen "inline" (sidebar-student) dibuat langsung dari JavaScript
+       * komponen lain diambil dari /components/<nama>.html
    - Menyelesaikan path relatif (data-href / data-src) lewat data-root di <body>,
      baik di dalam komponen maupun di konten halaman itu sendiri
    - Menandai menu aktif lewat data-page di <body>
@@ -20,6 +22,62 @@
 
   const ROOT = document.body.dataset.root || "";
   const PAGE = document.body.dataset.page || "";
+
+  /* ==========================================================
+     KOMPONEN INLINE
+     Sidebar siswa ditulis di sini agar tidak bisa terpotong atau
+     tertinggal di cache browser seperti file HTML terpisah.
+     ========================================================== */
+  const INLINE_COMPONENTS = {
+    "sidebar-student": () => `
+<aside class="sidebar" id="sidebar" aria-label="Menu siswa">
+  <div class="sidebar__top">
+    <a class="brand" data-href="pages/dashboard-student.html" aria-label="Zuppy — Dashboard">
+      <span class="brand-logo"><img data-src="assets/images/logo/logo.png" alt="Zuppy"></span>
+    </a>
+    <button class="sidebar__close" type="button" data-sidebar-close aria-label="Tutup menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Navigasi siswa">
+    <p class="sidebar__label">Menu Siswa</p>
+    <ul>
+      <li><a class="sidebar__link" data-nav="dashboard" data-href="pages/dashboard-student.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Dashboard</span></a></li>
+      <li><a class="sidebar__link" data-nav="subjects" data-href="pages/subjects.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Mata Pelajaran</span></a></li>
+      <li><a class="sidebar__link" data-nav="progress" data-href="pages/dashboard-student.html#progres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        <span>Progress Belajar</span></a></li>
+      <li><a class="sidebar__link" data-nav="leaderboard" data-href="pages/dashboard-student.html#leaderboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+        <span>Leaderboard</span></a></li>
+      <li><a class="sidebar__link" data-nav="profile" data-href="pages/profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+        <span>Profil Saya</span></a></li>
+    </ul>
+  </nav>
+
+  <div class="sidebar-tip">
+    <div class="mascot sidebar-tip__mascot"><img data-src="assets/images/mascot/maskot.png" alt=""></div>
+    <p class="sidebar-tip__title">Tips dari Zuppy</p>
+    <p class="sidebar-tip__text">Belajar sedikit tapi rutin lebih ampuh daripada sekali lama. Yuk selesaikan 1 level hari ini!</p>
+  </div>
+
+  <div class="sidebar__footer">
+    <a class="sidebar__link sidebar__back" data-href="pages/dashboard-student.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+      <span>Kembali ke Dashboard</span></a>
+    <a class="sidebar__link sidebar__link--logout" data-action="logout" data-href="pages/login.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+      <span>Logout</span></a>
+  </div>
+</aside>
+<div class="sidebar-overlay" data-sidebar-close></div>`,
+  };
 
   /** Tambahkan root ke path relatif; link eksternal & hash murni dibiarkan. */
   const withRoot = (path) =>
@@ -45,15 +103,25 @@
     });
   }
 
+  /** Buang skrip yang disisipkan otomatis oleh Live Server pada file HTML. */
+  const stripInjected = (html) =>
+    html.replace(/<!--\s*Code injected by live-server\s*-->[\s\S]*?<\/script>/i, "");
+
   /** Muat satu komponen dan gantikan elemen penampungnya. */
   async function loadComponent(slot) {
     const name = slot.dataset.component;
     try {
-      const response = await fetch(`${ROOT}components/${name}.html`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      let html;
+      if (INLINE_COMPONENTS[name]) {
+        html = INLINE_COMPONENTS[name]();
+      } else {
+        const response = await fetch(`${ROOT}components/${name}.html`, { cache: "no-cache" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        html = stripInjected(await response.text());
+      }
 
       const template = document.createElement("template");
-      template.innerHTML = (await response.text()).trim();
+      template.innerHTML = html.trim();
 
       resolvePaths(template.content);
       markActive(template.content);
@@ -287,4 +355,5 @@
 
   // API publik untuk script halaman lain
   window.ZuppyComponents = { ready, root: ROOT, page: PAGE, withRoot, resolvePaths };
+  console.info("[Zuppy] components.js v3 siap (sidebar inline)");
 })();
